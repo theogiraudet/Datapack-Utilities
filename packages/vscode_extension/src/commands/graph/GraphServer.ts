@@ -16,7 +16,7 @@ export class GraphServer {
     private readonly webview: Webview;
 
     private readonly dispatcher: EventDispatcher = {
-        "graph_payload": this.getGraph
+        "ask_graph": () => this.getGraph()
     };
 
     constructor(datapackManager: DatapackManager, webview: Webview) {
@@ -29,6 +29,7 @@ export class GraphServer {
             console.log("Receive an event");
             if(isQuery(message)) {
                 console.log("The event is a query");
+                console.log(message);
                 for(const [event, fun] of Object.entries(this.dispatcher)) {
                     if(message.payloadName === event) {
                         console.log("Execute query " + event);
@@ -41,7 +42,8 @@ export class GraphServer {
 
     private getGraph() {
         console.log("Send graph");
-        const query: SendGraphQuery<"d3"> = { payloadName: "graph_payload", graph: this.datapackManager.exportToGraph(new D3GraphRenderer()) };
+        const query: SendGraphQuery = { payloadName: "graph_payload", graph: this.datapackManager.getGraph() };
+        console.log(this.datapackManager.getGraph());
         this.webview.postMessage(query);
     }
 }

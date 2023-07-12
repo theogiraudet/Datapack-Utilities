@@ -1,8 +1,8 @@
 export class D3Graph {
-    type = "force";
-    categories: GraphCategories[] = [];
-    nodes: GraphNode[] = [];
-    edges: GraphLink[] = [];
+    private readonly type = "force";
+    private readonly categories: GraphCategories[] = [];
+    private readonly nodes: GraphNode[] = [];
+    private readonly edges: GraphLink[] = [];
 
     addCategory(name: string): number {
         if(this.categories.find(cat => cat.name === name)) {
@@ -19,7 +19,7 @@ export class D3Graph {
         }
     }
 
-    addNode(value: string, category: number) {
+    addNode(value: string, category: number): void {
         if(this.nodes.find(node => node.name === value)) {
             console.warn(`A node named '${value}' already exists.`);
         } else {
@@ -31,7 +31,7 @@ export class D3Graph {
         }
     }
 
-    addEdge(source: string, target: string) {
+    addEdge(source: string, target: string): void {
         const sourceIndex = this.nodes.findIndex(node => node.name === source);
         const targetIndex = this.nodes.findIndex(node => node.name === target);
         if(sourceIndex === -1) {

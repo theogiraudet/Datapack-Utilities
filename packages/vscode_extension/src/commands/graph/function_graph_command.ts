@@ -28,8 +28,9 @@ export async function displayGraphCommand(context: vscode.ExtensionContext) {
       const firtNamespace = manager.getAllNamespaces()[0];
       await manager.loadNamespaces(firtNamespace);
       // const graph = manager.exportToGraph(new D3GraphRenderer());
-      // webViewPanel.webview.html = await loadHtmlFile(context, webViewPanel);
-      webViewPanel.webview.html = getContent(webViewPanel.webview.asWebviewUri(vscode.Uri.file(path.join(context.extensionPath, 'libs', 'function_graph'))).toString());
+      webViewPanel.webview.html = await loadHtmlFile(context, webViewPanel);
+      const script = webViewPanel.webview.asWebviewUri(vscode.Uri.file(path.join(context.extensionPath, 'libs', 'function_graph', 'static', 'js', 'main.js')));
+      // webViewPanel.webview.html = getContent(webViewPanel.webview.asWebviewUri(vscode.Uri.file(path.join(context.extensionPath, 'libs', 'function_graph'))).toString(), script.toString());
       // const query: SendGraphQuery<"d3"> = { payloadName: "graph_payload", graph: graph };
       // webViewPanel.webview.postMessage(query);
       server = new GraphServer(manager, webViewPanel.webview);
@@ -45,7 +46,7 @@ async function loadHtmlFile(context: vscode.ExtensionContext, webViewPanel: vsco
     });
   }
 
-function getContent(path: string): string {
+function getContent(path: string, script: string): string {
   return `<!DOCTYPE html>
   <html lang="en">
     <head>
@@ -65,7 +66,7 @@ function getContent(path: string): string {
       <noscript>You need to enable JavaScript to run this app.</noscript>
       <script>const vscode = acquireVsCodeApi();</script>
       <div id="root"></div>
-      <script src="${scriptUri}"></script>
+      <script src="${script}"></script>
     </body>
   </html>
   `;

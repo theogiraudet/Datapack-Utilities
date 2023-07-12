@@ -1,4 +1,4 @@
-import { D3Graph } from "./D3Graph";
+import { D3Graph } from "./d3/D3Graph";
 import { NamespaceId } from "./models/model";
 
 export type Query = GetGraphQuery | GetNamespacesQuery | SendNamespacesQuery | AskGraphQuery;

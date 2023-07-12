@@ -2,10 +2,9 @@ import React, { useEffect, useState } from 'react';
 import logo from './logo.svg';
 import './App.css';
 import { D3Graph } from './D3Graph';
-import { AskGraphQuery, isQuery } from './protocol_messages';
-import { generateOptions } from './graph_renderer';
+import { AskGraphQuery, isQuery } from '../protocol_messages';
+import { generateOptions } from '../graph_renderer';
 import ReactEChartsCore from 'echarts-for-react/lib/core';
-import data from './data.json'
 import { GraphChart } from 'echarts/charts';
 import { LegendComponent } from 'echarts/components';
 import { SVGRenderer } from 'echarts/renderers';
@@ -13,7 +12,11 @@ import * as echarts from 'echarts/core';
 
 echarts.use([LegendComponent, GraphChart, SVGRenderer]);
 
-const vscode = acquireVsCodeApi();
+interface vscode {
+  postMessage(message: any): void;
+}
+
+declare const vscode: vscode;
 
 export function App() {
   return (
@@ -40,8 +43,6 @@ export function App() {
 export function App2() {
 
   const [graph, setGraph] = useState<D3Graph>(new D3Graph());
-  graph.addCategory("Resolved");
-  graph.addCategory("Unresolved");
 
   useEffect(() => {
     console.log("useEffect");
@@ -54,7 +55,7 @@ export function App2() {
         setGraph(event.data.graph)
       } 
     })
-  }, [graph])
+  }, [])
 
 
   return (
@@ -64,7 +65,7 @@ export function App2() {
       echarts={echarts}
         option={generateOptions(graph.nodes, graph.categories, graph.edges)}
         style={{width: window.innerWidth, height: window.innerHeight}}
-        // showLoading={true}
+        showLoading={true}
         // notMerge={true}
         // lazyUpdate={true}
         // theme={"theme_name"}
@@ -72,7 +73,7 @@ export function App2() {
         // onEvents={EventsDict}
         opts={{renderer: 'svg' }}
         
-        onEvents={{"size": (chart: any) => window.addEventListener('resize', chart.resize as any)}}
+        onEvents={{"size": (chart: any) => { console.log("foo"); window.addEventListener('resize', chart.resize as any); } }}
       />
       </header>
     </div>

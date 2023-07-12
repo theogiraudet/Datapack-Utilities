@@ -1,14 +1,14 @@
-import { GraphType, NamespaceId } from "./models/models";
+import { Graph, GraphType, NamespaceId } from "./models/models";
 
 export type ReceivableQueryRegistry = {
-    "graph_payload": AskGraphQuery
+    "ask_graph": AskGraphQuery
 }
 
-export type Query = SendGraphQuery<any> | SendNamespacesQuery | SendNamespacesQuery | AskGraphQuery;
+export type Query = SendGraphQuery | SendNamespacesQuery | SendNamespacesQuery | AskGraphQuery;
 
-export type SendGraphQuery<K extends keyof GraphType> = {
+export type SendGraphQuery = {
     payloadName: "graph_payload",
-    graph: GraphType[K]
+    graph: Graph.ArtifactGraph
 };
 
 export type SendNamespacesQuery = {

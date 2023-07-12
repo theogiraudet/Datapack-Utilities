@@ -2,14 +2,16 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
 import reportWebVitals from './reportWebVitals';
-import { App, App2 } from './App';
+import { App, App2 } from './d3/App';
+import { AppReactFlow } from './react_flow/App';
+import "reactflow/dist/style.css"
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
 );
 root.render(
   <React.StrictMode>
-    <App2 />
+    <AppReactFlow />
   </React.StrictMode>
 );
 

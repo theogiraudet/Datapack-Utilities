@@ -1,29 +1,13 @@
 import * as echarts from 'echarts/core';
-import { LegendComponent, LegendComponentOption } from 'echarts/components';
-import { GraphChart, GraphSeriesOption } from 'echarts/charts';
-import { SVGRenderer } from 'echarts/renderers';
-import { D3Graph, GraphCategory, GraphLink, GraphNode } from './D3Graph';
+import { LegendComponentOption } from 'echarts/components';
+import { GraphSeriesOption } from 'echarts/charts';
+import { GraphCategory, GraphLink, GraphNode } from './d3/D3Graph';
 
 // echarts.use([LegendComponent, GraphChart, SVGRenderer]);
 
 type EChartsOption = echarts.ComposeOption<
   LegendComponentOption | GraphSeriesOption
 >;
-
-
-// var chartDom = document.getElementById('main')!;
-// var myChart = echarts.init(chartDom);
-
-
-// export function displayLoader() {
-//     myChart.showLoading();
-// }
-
-// export function renderGraph(data: D3Graph) {
-//     const option = generateOptions(data.nodes, data.categories, data.edges);
-//     myChart.setOption(option);
-//     myChart.hideLoading();
-//     window.addEventListener('resize', myChart.resize as any);
 //   }
   
   export function generateOptions(nodes: GraphNode[], categories: GraphCategory[], links: GraphLink[]): EChartsOption {

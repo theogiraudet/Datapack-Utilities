@@ -21,11 +21,6 @@ export class DatapackManager {
         this.artifactLoaders.push(...loaders);
     }
 
-    exportToGraph<T extends keyof GraphType>(renderer: GraphRenderer<T>): GraphType[T] {
-        const graph = this.getGraph();
-        return renderer.generateGraph(graph);
-    }
-
     getGraph(): Graph.ArtifactGraph {
 
         if(this.isDirty && !this.graph) {
