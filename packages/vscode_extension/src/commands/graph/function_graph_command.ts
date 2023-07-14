@@ -2,9 +2,6 @@ import * as vscode from 'vscode';
 import * as path from 'path';
 import { DatapackManager } from './loaders/DatapackManager';
 import { McFunctionLoader } from './loaders/McFunctionLoader';
-import { D3GraphRenderer } from './d3/D3GraphRenderer';
-import { SendGraphQuery } from './protocol_messages';
-import { D3Graph } from './d3/D3Graph';
 import { GraphServer } from './GraphServer';
 
 let server: GraphServer | undefined;
@@ -25,7 +22,6 @@ export async function displayGraphCommand(context: vscode.ExtensionContext) {
 
       const manager = new DatapackManager([new McFunctionLoader()]);
       await manager.preloadWorkspace();
-      console.log(manager.getAllNamespaces());
       const firtNamespaces = manager.getAllNamespaces().slice(0, 2);
       await manager.loadNamespaces(...firtNamespaces);
       webViewPanel.webview.html = await loadHtmlFile(context, webViewPanel);

@@ -1,8 +1,9 @@
 import { Edge, Node, MarkerType } from "reactflow";
 import { Color } from "./custom_components/CircleNode";
-import { ArtifactGraph } from "./models/graph";
+import { ArtifactGraph, ResolvedArtifactNode } from "./models/graph";
+import { vscode } from "./App"
 
-export function convertGraphToFlow(graph: ArtifactGraph): { nodes: Node[], edges: Edge[] } {
+export function convertGraphToFlow(graph: ArtifactGraph, vscode?: vscode): { nodes: Node[], edges: Edge[] } {
     const nodes: Node[] = [];
     const edges: Edge[] = [];
 
@@ -19,8 +20,11 @@ export function convertGraphToFlow(graph: ArtifactGraph): { nodes: Node[], edges
     }
 
     for(const node of graph.artifacts) {
-        const color: Color = node.exist ? "default" : "red";
-        const nd: Node = { id: node.qualifiedName, position: { x: 0, y: 0 }, type: 'circle', data: { color: color, fade: false}, draggable: true };
+        const color: Color = node.exist ? "default" : "undefined";
+        const filePath = (node as any)["path"] ? (node as ResolvedArtifactNode).path : undefined
+        const nd: Node = { id: node.qualifiedName, position: { x: 0, y: 0 }, type: 'circle', 
+        data: { color: color, fade: false, vscode: vscode, filePath: filePath }, 
+        draggable: true };
         nodes.push(nd);
     }
 

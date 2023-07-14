@@ -8,14 +8,14 @@ import FloatingEdge from './custom_components/FloatingEdge';
 import { AskGraphQuery, isQuery } from './protocol_messages';
 
 
-interface vscode {
+export interface vscode {
   postMessage(message: any): void;
 }
 
 declare const vscode: vscode;
 
 const simulation = forceSimulation()
-  .force('charge', forceManyBody().strength(-30))
+  .force('charge', forceManyBody().strength(-70))
   .force('x', forceX().x(0).strength(0.05))
   .force('y', forceY().y(0).strength(0.05))
   .stop();
@@ -84,7 +84,8 @@ export const LayoutFlow = () => {
     vscode.postMessage(askGraph);
     window.addEventListener('message', event => { 
       if(isQuery(event.data) && event.data.payloadName === 'graph_payload') {
-        const { nodes, edges } = convertGraphToFlow(event.data.graph)
+        const { nodes, edges } = convertGraphToFlow(event.data.graph, vscode)
+        console.log(event.data.graph)
         setNodes(nodes)
         setEdges(edges)
       } 

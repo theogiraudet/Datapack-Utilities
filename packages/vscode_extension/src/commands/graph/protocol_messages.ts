@@ -1,10 +1,11 @@
 import { Graph, GraphType, NamespaceId } from "./models/models";
 
 export type ReceivableQueryRegistry = {
-    "ask_graph": AskGraphQuery
+    "ask_graph": AskGraphQuery,
+    "ask_open_file": AskOpenFileQuery
 }
 
-export type Query = SendGraphQuery | SendNamespacesQuery | SendNamespacesQuery | AskGraphQuery;
+export type Query = SendGraphQuery | SendNamespacesQuery | SendNamespacesQuery | AskGraphQuery | AskOpenFileQuery;
 
 export type SendGraphQuery = {
     payloadName: "graph_payload",
@@ -29,3 +30,9 @@ export type AskGraphQuery = {
 export function isQuery(obj: any): obj is Query {
     return typeof obj === 'object' && "payloadName" in obj;
 };
+
+export type AskOpenFileQuery = {
+    payloadName: "ask_open_file",
+    filePath: string
+};
+

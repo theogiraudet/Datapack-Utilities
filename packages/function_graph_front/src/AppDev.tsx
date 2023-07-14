@@ -8,7 +8,7 @@ import { forceLink, forceManyBody, forceSimulation, forceX, forceY } from 'd3-fo
 import FloatingEdge from './custom_components/FloatingEdge';
 
 const simulation = forceSimulation()
-  .force('charge', forceManyBody().strength(-30))
+  .force('charge', forceManyBody().strength(-70))
   .force('x', forceX().x(0).strength(0.05))
   .force('y', forceY().y(0).strength(0.05))
   .stop();
@@ -41,10 +41,12 @@ const useLayoutedElements = () => {
       );
 
     const tick = () => {
+
       simulation.tick();
       setNodes(nodes.map((node) => ({ ...node, position: { x: node.x, y: node.y } })));
-
+      
       window.requestAnimationFrame(() => {
+
         if (running) tick();
       });
     };
@@ -83,6 +85,7 @@ export const LayoutFlow = () => {
       edgeTypes={edgeTypes}
       minZoom={0.3}
       maxZoom={3}
+      onlyRenderVisibleElements={true}
     >
       
       <Controls showInteractive={false} />

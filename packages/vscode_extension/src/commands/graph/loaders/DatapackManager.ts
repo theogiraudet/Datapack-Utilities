@@ -37,7 +37,7 @@ export class DatapackManager {
                         namespace.artifacts.forEach(artifact => { 
                             const {name, qualifiedName, path, type} = artifact;
                             artifacts.push(artifact);
-                            resolvedNodes.set(name, { type, name, path, qualifiedName, exist: true }); 
+                            resolvedNodes.set(qualifiedName, { type, name, path, qualifiedName, exist: true }); 
                         });
                     }
                 }
@@ -60,6 +60,7 @@ export class DatapackManager {
                     });
                 }
             }
+            console.log(resolvedNodes.get("as-animator:child/loop"));
 
             this.graph = {artifacts: [...resolvedNodes.values(), ...unresolvedNodes], calls: edges};
         }

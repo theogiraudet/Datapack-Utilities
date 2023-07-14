@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 import { Disposable, Webview } from "vscode";
 import { DatapackManager } from "./loaders/DatapackManager";
-import { AskGraphQuery, Query, ReceivableQueryRegistry, SendGraphQuery, isQuery } from "./protocol_messages";
-import { D3GraphRenderer } from "./d3/D3GraphRenderer";
+import { AskGraphQuery, AskOpenFileQuery, Query, ReceivableQueryRegistry, SendGraphQuery, isQuery } from "./protocol_messages";
+import * as vscode from 'vscode';
 
 type PartialReceivableQueryRegistry = Partial<ReceivableQueryRegistry>;
 
@@ -16,7 +16,8 @@ export class GraphServer {
     private readonly webview: Webview;
 
     private readonly dispatcher: EventDispatcher = {
-        "ask_graph": () => this.getGraph()
+        "ask_graph": () => this.getGraph(),
+        "ask_open_file": (query: AskOpenFileQuery) => this.openFile(query)
     };
 
     constructor(datapackManager: DatapackManager, webview: Webview) {
@@ -29,7 +30,6 @@ export class GraphServer {
             console.log("Receive an event");
             if(isQuery(message)) {
                 console.log("The event is a query");
-                console.log(message);
                 for(const [event, fun] of Object.entries(this.dispatcher)) {
                     if(message.payloadName === event) {
                         console.log("Execute query " + event);
@@ -43,8 +43,12 @@ export class GraphServer {
     private getGraph() {
         console.log("Send graph");
         const query: SendGraphQuery = { payloadName: "graph_payload", graph: this.datapackManager.getGraph() };
-        console.log(this.datapackManager.getGraph());
-        console.log(query);
         this.webview.postMessage(query);
+    }
+
+    private openFile(query: AskOpenFileQuery) {
+        console.log(query.filePath);
+        const uri = vscode.Uri.file(query.filePath);
+        vscode.workspace.openTextDocument(uri).then(doc => vscode.window.showTextDocument(doc, 1, false));
     }
 }

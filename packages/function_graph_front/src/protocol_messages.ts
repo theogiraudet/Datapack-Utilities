@@ -27,3 +27,8 @@ export type AskGraphQuery = {
     payloadName: "ask_graph"
 }
 
+export type AskOpenFileQuery = {
+    payloadName: "ask_open_file",
+    filePath: string
+}
+
