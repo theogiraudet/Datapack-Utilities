@@ -44,6 +44,7 @@ export class GraphServer {
         console.log("Send graph");
         const query: SendGraphQuery = { payloadName: "graph_payload", graph: this.datapackManager.getGraph() };
         console.log(this.datapackManager.getGraph());
+        console.log(query);
         this.webview.postMessage(query);
     }
 }

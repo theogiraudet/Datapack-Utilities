@@ -1,11 +1,11 @@
-import { D3Graph } from "./d3/D3Graph";
 import { NamespaceId } from "./models/model";
+import { ArtifactGraph } from "./models/graph";
 
 export type Query = GetGraphQuery | GetNamespacesQuery | SendNamespacesQuery | AskGraphQuery;
 
 export type GetGraphQuery = {
     payloadName: "graph_payload",
-    graph: D3Graph
+    graph: ArtifactGraph
 };
 
 export type GetNamespacesQuery = {

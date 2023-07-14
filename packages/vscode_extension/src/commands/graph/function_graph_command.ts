@@ -25,14 +25,11 @@ export async function displayGraphCommand(context: vscode.ExtensionContext) {
 
       const manager = new DatapackManager([new McFunctionLoader()]);
       await manager.preloadWorkspace();
-      const firtNamespace = manager.getAllNamespaces()[0];
-      await manager.loadNamespaces(firtNamespace);
-      // const graph = manager.exportToGraph(new D3GraphRenderer());
+      console.log(manager.getAllNamespaces());
+      const firtNamespaces = manager.getAllNamespaces().slice(0, 2);
+      await manager.loadNamespaces(...firtNamespaces);
       webViewPanel.webview.html = await loadHtmlFile(context, webViewPanel);
-      const script = webViewPanel.webview.asWebviewUri(vscode.Uri.file(path.join(context.extensionPath, 'libs', 'function_graph', 'static', 'js', 'main.js')));
-      // webViewPanel.webview.html = getContent(webViewPanel.webview.asWebviewUri(vscode.Uri.file(path.join(context.extensionPath, 'libs', 'function_graph'))).toString(), script.toString());
-      // const query: SendGraphQuery<"d3"> = { payloadName: "graph_payload", graph: graph };
-      // webViewPanel.webview.postMessage(query);
+      // const script = webViewPanel.webview.asWebviewUri(vscode.Uri.file(path.join(context.extensionPath, 'libs', 'function_graph', 'assets', 'main.js')));
       server = new GraphServer(manager, webViewPanel.webview);
       server.dispatchEvents();
     }
@@ -45,30 +42,4 @@ async function loadHtmlFile(context: vscode.ExtensionContext, webViewPanel: vsco
       return `${p1}="${webViewPanel.webview.asWebviewUri(vscode.Uri.file(path.join(context.extensionPath, 'libs', 'function_graph', p2)))}"`;
     });
   }
-
-function getContent(path: string, script: string): string {
-  return `<!DOCTYPE html>
-  <html lang="en">
-    <head>
-      <meta charset="utf-8" />
-      <link rel="icon" href="${path}/favicon.ico" />
-      <meta name="viewport" content="width=device-width, initial-scale=1" />
-      <meta name="theme-color" content="#000000" />
-      <meta
-        name="description"
-        content="Web site created using create-react-app"
-      />
-      <link rel="apple-touch-icon" href="${path}/logo192.png" />
-      <link rel="manifest" href="${path}/manifest.json" />
-      <title>React App</title>
-    </head>
-    <body>
-      <noscript>You need to enable JavaScript to run this app.</noscript>
-      <script>const vscode = acquireVsCodeApi();</script>
-      <div id="root"></div>
-      <script src="${script}"></script>
-    </body>
-  </html>
-  `;
-}
   
