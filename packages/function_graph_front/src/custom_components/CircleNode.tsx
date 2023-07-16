@@ -2,7 +2,7 @@ import { MouseEventHandler, useCallback, useEffect, useState } from 'react';
 import { Handle, Node, NodeProps, NodeToolbar, Position, useReactFlow } from 'reactflow';
 import { Tooltip as ReactTooltip } from "react-tooltip";
 import './custom_graph_elements.css';
-import { vscode } from '../App';
+import { vscode } from '../graph_providers/VsCodeProvider';
 
 export type Color = "undefined" | "default";
 

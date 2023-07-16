@@ -1,7 +1,7 @@
 import { Edge, Node, MarkerType } from "reactflow";
-import { Color } from "./custom_components/CircleNode";
-import { ArtifactGraph, ResolvedArtifactNode } from "./models/graph";
-import { vscode } from "./App"
+import { Color } from "../custom_components/CircleNode";
+import { ArtifactGraph, ResolvedArtifactNode } from "../models/input_graph";
+import { vscode } from "./VsCodeProvider"
 
 export function convertGraphToFlow(graph: ArtifactGraph, vscode?: vscode): { nodes: Node[], edges: Edge[] } {
     const nodes: Node[] = [];

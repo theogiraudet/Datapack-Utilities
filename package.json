@@ -3,12 +3,11 @@
   "version": "1.0.0",
   "description": "",
   "scripts": {
-    "build:fg": "npm run build --workspace=function_graph",
-    "build:fg_react": "npm run build --workspace=function_graph_front",
+    "build:fg": "npm run build --workspace=function_graph_front",
     "build:extension": "npm run compile --workspace=vscode_extension",
-    "build": "npm run build:fg && shx cp -r packages/function_graph/dist packages/vscode_extension/libs/function_graph && npm run build:extension",
+    "build": "npm run build:fg_react && shx rm -rf packages/vscode_extension/libs/function_graph && shx cp -r packages/function_graph_front/dist packages/vscode_extension/libs/function_graph && npm run build:extension",
     "build_react": "npm run build:fg_react && shx rm -rf packages/vscode_extension/libs/function_graph && shx cp -r packages/function_graph_front/dist packages/vscode_extension/libs/function_graph && npm run build:extension",
-    "dev:fg": "npm run dev --workspace=function_graph"
+    "dev:fg": "npm run dev --workspace=function_graph_front"
   },
   "author": "",
   "license": "ISC",

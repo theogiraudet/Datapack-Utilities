@@ -1,5 +1,5 @@
 import { NamespaceId } from "./models/model";
-import { ArtifactGraph } from "./models/graph";
+import { ArtifactGraph } from "./models/input_graph";
 
 export type Query = GetGraphQuery | GetNamespacesQuery | SendNamespacesQuery | AskGraphQuery;
 

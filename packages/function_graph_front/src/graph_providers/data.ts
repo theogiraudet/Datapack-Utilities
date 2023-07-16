@@ -1,4 +1,4 @@
-import { ArtifactGraph } from "./models/graph";
+import { ArtifactGraph } from "../models/input_graph";
 
 export const data: ArtifactGraph = {
   "artifacts": [
