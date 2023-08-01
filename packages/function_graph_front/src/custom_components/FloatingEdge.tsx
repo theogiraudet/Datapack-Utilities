@@ -4,7 +4,7 @@ import './custom_graph_elements.css';
 
 import { getEdgeParams } from './utils';
 
-type Param = {
+export type FloatingEdgeData = {
   id: string,
   source: string,
   target: string,
@@ -12,7 +12,7 @@ type Param = {
   style: CSSProperties
 }
 
-function FloatingEdge({ id, source, target, markerEnd, style }: EdgeProps<Param>) {
+function FloatingEdge({ id, source, target, markerEnd, style }: EdgeProps<FloatingEdgeData>) {
   const sourceNode = useStore(useCallback((store) => store.nodeInternals.get(source), [source]));
   const targetNode = useStore(useCallback((store) => store.nodeInternals.get(target), [target]));
 

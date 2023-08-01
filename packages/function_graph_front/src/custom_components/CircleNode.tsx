@@ -2,7 +2,7 @@ import { MouseEventHandler, useCallback, useEffect, useState } from 'react';
 import { Handle, Node, NodeProps, NodeToolbar, Position, useReactFlow } from 'reactflow';
 import { Tooltip as ReactTooltip } from "react-tooltip";
 import './custom_graph_elements.css';
-import { vscode } from '../graph_providers/VsCodeProvider';
+import DataManager from '../graph_providers/DataManager';
 
 export type Color = "undefined" | "default";
 
@@ -19,7 +19,7 @@ export type CircleNodeData = {
   fade?: boolean;
   color: Color;
   filePath?: string
-  vscode?: vscode
+  dataManager?: DataManager
 };
 
 export type CircleNode = Node<CircleNodeData>;
@@ -42,8 +42,8 @@ export function CustomCircleNode({ id, data }: NodeProps<CircleNodeData>) {
   const [pressed, setPressed] = useState(false)
 
   const onClickHandler:  MouseEventHandler<HTMLDivElement> = (event) => {
-    if(event.ctrlKey && data.vscode && data.filePath) {
-      data.vscode.postMessage({ payloadName: "ask_open_file", filePath: data.filePath })
+    if(event.ctrlKey && data.dataManager && data.filePath) {
+      data.dataManager.openFile(data.filePath)
       setPressed(false)
     }
   }
@@ -55,7 +55,6 @@ export function CustomCircleNode({ id, data }: NodeProps<CircleNodeData>) {
 
   let className = ""
   if(pressed && isVisible) {
-    console.log("pressed " + id)
     className = "circle goto"
   } else {
     className = "circle"

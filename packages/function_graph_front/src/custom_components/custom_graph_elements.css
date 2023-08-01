@@ -23,7 +23,6 @@
 
   .goto {
     cursor: pointer;
-    animation: goto 1000ms infinite ease-in-out;
     filter: brightness(130%)
   }
   
@@ -38,24 +37,6 @@
       transform: scale(1.07);
     }
     100% {
-      transform: scale(1.1);
-    }
-  }
-
-  @keyframes goto {
-    0% {
-      transform: scale(1);
-    }
-    12.5% {
-      transform: scale(1.15);
-    }
-    25% {
-      transform: scale(1.08);
-    }
-    37.5% {
-      transform: scale(1.12);
-    }
-    50% {
       transform: scale(1.1);
     }
   }
