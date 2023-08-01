@@ -10,9 +10,16 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@emotion/react": "^11.11.1",
+    "@emotion/styled": "^11.11.0",
+    "@mui/icons-material": "^5.14.0",
+    "@mui/lab": "*",
+    "@mui/material": "^5.14.0",
     "@types/d3-force": "^3.0.4",
     "d3-force": "^3.0.0",
+    "hamburger-react": "^2.5.0",
     "react": "^18.2.0",
+    "react-checkbox-tree": "^1.8.0",
     "react-dom": "^18.2.0",
     "react-tooltip": "^5.18.0",
     "reactflow": "^11.7.4"

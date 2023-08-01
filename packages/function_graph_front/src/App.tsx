@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import ReactFlow, {
   Controls,
   Background,
@@ -8,8 +8,9 @@ import ReactFlow, {
   ReactFlowProvider,
   useReactFlow,
   useStore,
-  Edge,
   Panel,
+  Edge,
+  Node
 } from "reactflow";
 import "reactflow/dist/style.css";
 import {
@@ -23,36 +24,71 @@ import {
   forceX,
   forceY,
 } from "d3-force";
-import FloatingEdge from "./custom_components/FloatingEdge";
-import GraphProvider from "./graph_providers/GraphProvider";
-import { ToolBar } from "./custom_components/Toolbar";
-import { Button, IconButton, SpeedDial, SpeedDialAction, SpeedDialIcon, Toolbar, Typography } from "@mui/material";
+import FloatingEdge, { FloatingEdgeData } from "./custom_components/FloatingEdge";
+import DataManager from "./graph_providers/DataManager";
+import { Toolbar } from "./custom_components/Toolbar";
+import { Graph } from "./models/model";
+import { update } from "./utils";
 
 const simulation = forceSimulation()
   .force("charge", forceManyBody().strength(-70))
   .force("x", forceX().x(0).strength(0.05))
   .force("y", forceY().y(0).strength(0.05))
-  .stop();
+  .stop()
 
 const nodeTypes = { circle: CustomCircleNode };
 const edgeTypes = {
   floating: FloatingEdge,
 };
 
-const useLayoutedElements = () => {
-  const { getNodes, setNodes, getEdges } = useReactFlow<CircleNodeData, any>();
+const useLayoutedElements = (graph: Graph) => {
+  const { getNodes, setNodes, getEdges } = useReactFlow<CircleNodeData, FloatingEdgeData>();
   const initialised = useStore((store) =>
     [...store.nodeInternals.values()].every((node) => node.width && node.height)
   );
 
+  const [animationFrame, setAnimationFrame] = useState(0)
+
+  const convert = (node: Node<CircleNodeData>) => ({
+    ...node,
+    x: node.position.x,
+    y: node.position.y,
+  })
+
+
+  // console.log(graph.nodes.length)
+
   return useMemo(() => {
-    const nodes = getNodes().map((node) => ({
-      ...node,
-      x: node.position.x,
-      y: node.position.y,
-    }));
-    const edges = getEdges().map((edge) => edge);
     let running = false;
+
+    const nodes = getNodes().map(convert);
+    const edges = getEdges().map(edge => edge);
+
+    const tick = () => {
+
+      const newNodes = update(nodes, getNodes(), convert)
+      simulation.tick();
+      // Issue here: setNodes is executed with old instance of nodes with all nodes.
+      setNodes(
+        newNodes.map((node) => ({ ...node, position: { x: node.x, y: node.y } }))
+      );
+
+      setAnimationFrame(window.requestAnimationFrame(() => {
+        if (running) tick();
+      }));
+    };
+
+    const toggle = () => {
+      running = !running;
+      running && setAnimationFrame(window.requestAnimationFrame(tick));
+    };
+
+    // window.cancelAnimationFrame(animationFrame)
+    // if(running) {
+    //   setAnimationFrame(window.requestAnimationFrame(tick));
+    // }
+
+
 
     if (!initialised || nodes.length === 0) return [false, {}];
 
@@ -64,49 +100,51 @@ const useLayoutedElements = () => {
         .strength(0.3)
     );
 
-    const tick = () => {
-      simulation.tick();
-      setNodes(
-        nodes.map((node) => ({ ...node, position: { x: node.x, y: node.y } }))
-      );
-
-      window.requestAnimationFrame(() => {
-        if (running) tick();
-      });
-    };
-
-    const toggle = () => {
-      running = !running;
-      running && window.requestAnimationFrame(tick);
-    };
 
     const isRunning = () => running;
+    console.log("Use memo")
+    console.log(`>>> ${getNodes().length}`)
+    console.log(`>>> ${getEdges().length}`)
 
     return [true, { toggle, isRunning }];
-  }, [initialised]);
+  }, [initialised, graph]);
 };
 
 export type AppProps = {
-  provider: GraphProvider;
+  provider: DataManager;
 };
 
-export const LayoutFlow = ({ provider }: AppProps) => {
-  const { nodes: initialNodes, edges: initialEdges } =
-    provider.getInitialState();
-  const [nodes, setNodes, onNodesChange] = useNodesState<Node[]>(initialNodes);
-  const [edges, setEdges, onEdgesChange] = useEdgesState<Edge[]>(initialEdges);
-  const [initialised, values] = useLayoutedElements();
+export const LayoutFlow = ({ provider: dataManager }: AppProps) => {
+
+  const { nodes: initialNodes, edges: initialEdges } = useMemo(() => dataManager.getGraphInitialState(), [dataManager]);
+
+  const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
+  const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
+  const [graph, setGraph] = useState<Graph>({ edges: initialEdges, nodes: initialNodes});
+  const [namespaces, setNamespaces] = useState(dataManager.getInitialNamespaces());
+
+  const [initialised, values] = useLayoutedElements(graph);
 
   useEffect(() => {
-    provider.onChange((graph) => {
+    dataManager.onNamespacesChange((loadedNamespaces, namespaces) => {
+      setNamespaces({allNamespaces: namespaces, loadedNamespaces})
+      // console.log(loadedNamespaces)
+    })
+    dataManager.onGraphChange((graph) => {
+      // if (initialised) (values as any).toggle();
       setNodes(graph.nodes);
+      console.log(`???? ${graph.nodes.length}`)
       setEdges(graph.edges);
+      setGraph(graph);
     });
   }, []);
 
+  // console.log(`!!!!! ${nodes.length}`)
+
   useEffect(() => {
+    // console.log(useEffect)
     if (initialised) (values as any).toggle();
-  }, [initialised, values]);
+  }, [initialised, graph]);
 
   return (
     <ReactFlow
@@ -127,7 +165,7 @@ export const LayoutFlow = ({ provider }: AppProps) => {
       onlyRenderVisibleElements={true}
     >
       <Panel position="top-left" >
-        <ToolBar />
+        <Toolbar loadedNamespaces={namespaces.loadedNamespaces} namespaces={namespaces.allNamespaces} dataManager={dataManager}/>
       </Panel>
       <Controls showInteractive={false} />
       <Background />

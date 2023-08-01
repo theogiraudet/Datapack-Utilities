@@ -1,11 +1,12 @@
 import { Graph, GraphType, NamespaceId } from "./models/models";
 
 export type ReceivableQueryRegistry = {
-    "ask_graph": AskGraphQuery,
-    "ask_open_file": AskOpenFileQuery
+    "init": InitializationQuery,
+    "ask_open_file": AskOpenFileQuery,
+    "load_namespaces": LoadNamespaces
 }
 
-export type Query = SendGraphQuery | SendNamespacesQuery | SendNamespacesQuery | AskGraphQuery | AskOpenFileQuery;
+export type Query = SendGraphQuery | SendNamespacesQuery | SendNamespacesQuery | InitializationQuery | AskOpenFileQuery | LoadNamespaces;
 
 export type SendGraphQuery = {
     payloadName: "graph_payload",
@@ -23,9 +24,9 @@ export type LoadNamespacesQuery = {
     namespacesToLoad: NamespaceId[]
 };
 
-export type AskGraphQuery = {
-    payloadName: "ask_graph"
-};
+export type InitializationQuery = {
+    payloadName: "init"
+}
 
 export function isQuery(obj: any): obj is Query {
     return typeof obj === 'object' && "payloadName" in obj;
@@ -34,5 +35,15 @@ export function isQuery(obj: any): obj is Query {
 export type AskOpenFileQuery = {
     payloadName: "ask_open_file",
     filePath: string
+};
+
+
+export type AskNamespaces = {
+    payloadName: "ask_namespaces",
+};
+
+export type LoadNamespaces = {
+    payloadName: "load_namespaces",
+    namespaces: NamespaceId[]
 };
 

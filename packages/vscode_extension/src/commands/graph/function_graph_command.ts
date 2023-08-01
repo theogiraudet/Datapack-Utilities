@@ -22,7 +22,7 @@ export async function displayGraphCommand(context: vscode.ExtensionContext) {
 
       const manager = new DatapackManager([new McFunctionLoader()]);
       await manager.preloadWorkspace();
-      const firtNamespaces = manager.getAllNamespaces().slice(0, 2);
+      const firtNamespaces = manager.getAllNamespaces();
       await manager.loadNamespaces(...firtNamespaces);
       webViewPanel.webview.html = await loadHtmlFile(context, webViewPanel);
       // const script = webViewPanel.webview.asWebviewUri(vscode.Uri.file(path.join(context.extensionPath, 'libs', 'function_graph', 'assets', 'main.js')));

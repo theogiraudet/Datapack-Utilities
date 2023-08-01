@@ -6,7 +6,6 @@ export class D3GraphRenderer implements GraphRenderer<"d3"> {
     
     generateGraph(graph: Graph.ArtifactGraph): D3Graph {
         const d3Graph = new D3Graph();
-        console.log(d3Graph);
         const resolvedId = d3Graph.addCategory("Resolved");
         const unresolvedId = d3Graph.addCategory("Unresolved");
 

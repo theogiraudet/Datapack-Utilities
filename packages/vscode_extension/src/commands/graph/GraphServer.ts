@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 import { Disposable, Webview } from "vscode";
 import { DatapackManager } from "./loaders/DatapackManager";
-import { AskGraphQuery, AskOpenFileQuery, Query, ReceivableQueryRegistry, SendGraphQuery, isQuery } from "./protocol_messages";
+import { AskOpenFileQuery, LoadNamespaces, Query, ReceivableQueryRegistry, SendGraphQuery, SendNamespacesQuery, isQuery } from "./protocol_messages";
 import * as vscode from 'vscode';
 
 type PartialReceivableQueryRegistry = Partial<ReceivableQueryRegistry>;
@@ -16,8 +16,9 @@ export class GraphServer {
     private readonly webview: Webview;
 
     private readonly dispatcher: EventDispatcher = {
-        "ask_graph": () => this.getGraph(),
-        "ask_open_file": (query: AskOpenFileQuery) => this.openFile(query)
+        "init": () => { this.sendGraph();  this.sendNamespaces(); },
+        "ask_open_file": (query: AskOpenFileQuery) => this.openFile(query),
+        "load_namespaces": (query: LoadNamespaces) => this.loadNamespaces(query)
     };
 
     constructor(datapackManager: DatapackManager, webview: Webview) {
@@ -27,12 +28,9 @@ export class GraphServer {
 
     public dispatchEvents(): Disposable {
         return this.webview.onDidReceiveMessage(message => {
-            console.log("Receive an event");
             if(isQuery(message)) {
-                console.log("The event is a query");
                 for(const [event, fun] of Object.entries(this.dispatcher)) {
                     if(message.payloadName === event) {
-                        console.log("Execute query " + event);
                         fun(message as any);
                     }
                 }
@@ -40,15 +38,23 @@ export class GraphServer {
         });
     }
 
-    private getGraph() {
-        console.log("Send graph");
+    private sendGraph() {
         const query: SendGraphQuery = { payloadName: "graph_payload", graph: this.datapackManager.getGraph() };
         this.webview.postMessage(query);
     }
 
+    private sendNamespaces() {
+        const query: SendNamespacesQuery = { payloadName: "namespaces_payload", loadedNamespaces: this.datapackManager.getAllLoadedNamespaces(), allNamespaces: this.datapackManager.getAllNamespaces() };
+        this.webview.postMessage(query);
+    }
+
     private openFile(query: AskOpenFileQuery) {
-        console.log(query.filePath);
         const uri = vscode.Uri.file(query.filePath);
         vscode.workspace.openTextDocument(uri).then(doc => vscode.window.showTextDocument(doc, 1, false));
+    }
+
+    private loadNamespaces(query: LoadNamespaces) {
+        this.datapackManager.loadNamespaces(...query.namespaces)
+        .then(() => { this.sendNamespaces(); this.sendGraph(); });
     }
 }

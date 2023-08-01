@@ -23,7 +23,8 @@ export class DatapackManager {
 
     getGraph(): Graph.ArtifactGraph {
 
-        if(this.isDirty && !this.graph) {
+        if(this.isDirty || !this.graph) {
+            console.log("recompute");
             const resolvedNodes: Map<string, Graph.ResolvedArtifactNode> = new Map();
             const unresolvedNodes: Graph.UnresolvedArtifactNode[] = [];
             const edges: Graph.ArtifactEdge[] = [];
@@ -60,7 +61,6 @@ export class DatapackManager {
                     });
                 }
             }
-            console.log(resolvedNodes.get("as-animator:child/loop"));
 
             this.graph = {artifacts: [...resolvedNodes.values(), ...unresolvedNodes], calls: edges};
         }
@@ -136,22 +136,32 @@ export class DatapackManager {
 
     public async loadNamespaces(...namespaces: NamespaceId[]) {
 
-        const nmsName = namespaces.map(nms => nms.namespace);
-        
-        const namespacePathToLoad = this.datapacks.flatMap(dp => dp.namespaces)
-                                                  .filter(nms => nmsName.includes(nms.namespace) && !nms.loaded)
-                                                  .map(nms => nms.path);
+        const nmsName = namespaces.map(nms => `${nms.datapack}/${nms.namespace}`);
+
+        const oldNamespaceIds = this.getAllLoadedNamespaces().map(nms => `${nms.datapack}:${nms.namespace}`);
+        const newNamespaceIds = namespaces.map(nms => `${nms.datapack}:${nms.namespace}`);
+        console.log(oldNamespaceIds);
+        console.log(newNamespaceIds);
+        this.isDirty = [...oldNamespaceIds.filter(nms => newNamespaceIds.indexOf(nms) === -1), ...newNamespaceIds.filter(nms => oldNamespaceIds.indexOf(nms) === -1)].length > 0;
+        console.log(newNamespaceIds.filter(nms => oldNamespaceIds.indexOf(nms) === -1));
+        console.log(oldNamespaceIds.filter(nms => newNamespaceIds.indexOf(nms) === -1));
+
+        const namespacePathToLoad = this.datapacks.flatMap(dp => dp.namespaces.map<[string, Namespace]>(nms => [dp.name, nms]))
+                                                  .filter(nms => nmsName.includes(`${nms[0]}/${nms[1].namespace}`))
+                                                  .map(nms => nms[1].path);
 
         for(const dp of this.datapacks) {
             const newNamespaces: Namespace[] = [];
             for(const nms of dp.namespaces) {
-                if(namespacePathToLoad.includes(nms.path)) {
+                if(namespacePathToLoad.includes(nms.path) && !nms.loaded) {
                     const artifacts: MinecraftArtifact[] = [];
                      for await(const loader of this.artifactLoaders) {
                         const loadedArtifacts = await loader.load(nms.path);
                         artifacts.push(...loadedArtifacts);
                     }
                     newNamespaces.push({loaded: true, namespace: nms.namespace, path: nms.path, artifacts: artifacts});
+                } else if(namespacePathToLoad.includes(nms.path) &&nms.loaded) {
+                    newNamespaces.push(nms);
                 } else {
                     newNamespaces.push({loaded: false, namespace: nms.namespace, path: nms.path});
                 }

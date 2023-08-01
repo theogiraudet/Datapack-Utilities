@@ -1,7 +1,7 @@
 import { NamespaceId } from "./models/model";
 import { ArtifactGraph } from "./models/input_graph";
 
-export type Query = GetGraphQuery | GetNamespacesQuery | SendNamespacesQuery | AskGraphQuery;
+export type Query = GetGraphQuery | GetNamespacesQuery | SendNamespacesQuery | InitializationQuery | AskOpenFileQuery | LoadNamespaces;
 
 export type GetGraphQuery = {
     payloadName: "graph_payload",
@@ -23,8 +23,8 @@ export function isQuery(obj: any): obj is Query {
     return typeof obj === 'object' && "payloadName" in obj;
 }
 
-export type AskGraphQuery = {
-    payloadName: "ask_graph"
+export type InitializationQuery = {
+    payloadName: "init"
 }
 
 export type AskOpenFileQuery = {
@@ -32,3 +32,7 @@ export type AskOpenFileQuery = {
     filePath: string
 }
 
+export type LoadNamespaces = {
+    payloadName: "load_namespaces",
+    namespaces: NamespaceId[]
+}
